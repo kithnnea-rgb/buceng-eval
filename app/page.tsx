@@ -33,7 +33,6 @@ export default function LoginPage() {
       return;
     }
 
-    // Persist login state in sessionStorage
     sessionStorage.setItem('evaluator_id', data.id);
     sessionStorage.setItem('evaluator_name', data.full_name);
     sessionStorage.setItem('evaluator_role', data.role);
@@ -46,14 +45,17 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-[#FDF0D0] flex items-center justify-center p-4">
       <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8">
         <div className="text-center mb-6">
-          <div className="w-16 h-16 bg-blue-900 text-white font-bold text-xl rounded-full flex items-center justify-center mx-auto mb-3">
-            BUCENG
-          </div>
-          <h2 className="text-sm font-semibold text-gray-500 uppercase tracking-wide">Bicol University</h2>
-          <h1 className="text-xl font-bold text-gray-800">CSC Internal Evaluation Portal</h1>
+          {/* Official Logo Display */}
+          <img 
+            src="/logo.png" 
+            alt="BUCENG Logo" 
+            className="w-24 h-24 mx-auto mb-3 object-contain" 
+          />
+          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">Bicol University</h2>
+          <h1 className="text-xl font-bold text-gray-900 mt-1">CSC Internal Evaluation Portal</h1>
         </div>
 
         {error && (
@@ -64,13 +66,13 @@ export default function LoginPage() {
 
         <form onSubmit={handleLogin} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Unique Login Code</label>
+            <label className="block text-sm font-semibold text-gray-700 mb-1">Unique Login Code</label>
             <input
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="e.g. EVAL-9A82"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none uppercase"
+              placeholder="E.G. EVAL-9A82"
+              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E8760A] focus:outline-none uppercase"
               required
             />
           </div>
@@ -78,7 +80,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-900 hover:bg-blue-800 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50"
+            className="w-full bg-[#E8760A] hover:bg-[#d26807] text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 shadow-sm"
           >
             {loading ? 'Validating...' : 'Access Portal'}
           </button>

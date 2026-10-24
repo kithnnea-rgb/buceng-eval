@@ -55,6 +55,8 @@ export default function AdminDashboard() {
       q1_rating,
       q2_rating,
       q3_rating,
+      q4_rating,
+      q5_rating,
       comments,
       submission_type,
       assignments (
@@ -65,7 +67,7 @@ export default function AdminDashboard() {
 
     if (!data) return;
 
-    const headers = 'Evaluator,Role,Subject,Position,Q1,Q2,Q3,Comments,Status\n';
+    const headers = 'Evaluator,Role,Subject,Position,Q1,Q2,Q3,Q4,Q5,Comments,Status\n';
     const rows = data
       .map((row: any) =>
         [
@@ -76,6 +78,8 @@ export default function AdminDashboard() {
           row.q1_rating,
           row.q2_rating,
           row.q3_rating,
+          row.q4_rating,
+          row.q5_rating,
           `"${(row.comments || '').replace(/"/g, '""')}"`,
           row.submission_type,
         ].join(',')
@@ -90,49 +94,50 @@ export default function AdminDashboard() {
     a.click();
   }
 
-  if (loading) return <div className="p-8 text-center">Loading Administrator Portal...</div>;
+  if (loading) return <div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">Loading Administrator Portal...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
+    <div className="min-h-screen bg-[#FDF0D0] p-8">
       <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex justify-between items-center bg-white p-6 rounded-xl shadow border">
+        {/* Ember Header Banner */}
+        <div className="flex justify-between items-center bg-[#C04A06] text-white p-6 rounded-xl shadow-md">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Administrator Dashboard</h1>
-            <p className="text-sm text-gray-500">System Administrator: Krisie</p>
+            <h1 className="text-2xl font-bold">Administrator Dashboard</h1>
+            <p className="text-sm text-amber-100">System Administrator: Krisie</p>
           </div>
           <button
             onClick={exportCSV}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition"
+            className="bg-[#E8760A] hover:bg-[#d26807] text-white font-semibold px-4 py-2.5 rounded-lg text-sm transition shadow-sm"
           >
             Export CSV Report
           </button>
         </div>
 
-        {/* Statistic Cards */}
+        {/* Statistic Cards with Gold Numbers (#F7C95A) */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          <div className="bg-white p-5 rounded-xl border shadow-sm">
-            <p className="text-sm text-gray-500 font-medium">Total Council Members</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.totalMembers}</p>
+          <div className="bg-gray-900 p-5 rounded-xl border border-gray-800 shadow-sm">
+            <p className="text-sm text-gray-400 font-medium">Total Council Members</p>
+            <p className="text-3xl font-extrabold text-[#F7C95A] mt-1">{stats.totalMembers}</p>
           </div>
-          <div className="bg-white p-5 rounded-xl border shadow-sm">
-            <p className="text-sm text-gray-500 font-medium">Total Evaluators</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.totalEvaluators}</p>
+          <div className="bg-gray-900 p-5 rounded-xl border border-gray-800 shadow-sm">
+            <p className="text-sm text-gray-400 font-medium">Total Evaluators</p>
+            <p className="text-3xl font-extrabold text-[#F7C95A] mt-1">{stats.totalEvaluators}</p>
           </div>
-          <div className="bg-white p-5 rounded-xl border shadow-sm">
-            <p className="text-sm text-gray-500 font-medium">Total Assigned</p>
-            <p className="text-2xl font-bold text-gray-800">{stats.totalAssignments}</p>
+          <div className="bg-gray-900 p-5 rounded-xl border border-gray-800 shadow-sm">
+            <p className="text-sm text-gray-400 font-medium">Total Assigned</p>
+            <p className="text-3xl font-extrabold text-[#F7C95A] mt-1">{stats.totalAssignments}</p>
           </div>
-          <div className="bg-white p-5 rounded-xl border shadow-sm">
-            <p className="text-sm text-gray-500 font-medium">Completed</p>
-            <p className="text-2xl font-bold text-green-600">{stats.completed}</p>
+          <div className="bg-gray-900 p-5 rounded-xl border border-gray-800 shadow-sm">
+            <p className="text-sm text-gray-400 font-medium">Completed</p>
+            <p className="text-3xl font-extrabold text-[#F7C95A] mt-1">{stats.completed}</p>
           </div>
-          <div className="bg-white p-5 rounded-xl border shadow-sm">
-            <p className="text-sm text-gray-500 font-medium">Pending</p>
-            <p className="text-2xl font-bold text-yellow-600">{stats.pending}</p>
+          <div className="bg-gray-900 p-5 rounded-xl border border-gray-800 shadow-sm">
+            <p className="text-sm text-gray-400 font-medium">Pending</p>
+            <p className="text-3xl font-extrabold text-[#F7C95A] mt-1">{stats.pending}</p>
           </div>
-          <div className="bg-white p-5 rounded-xl border shadow-sm">
-            <p className="text-sm text-gray-500 font-medium">Completion Rate</p>
-            <p className="text-2xl font-bold text-blue-600">{stats.percentage}%</p>
+          <div className="bg-gray-900 p-5 rounded-xl border border-gray-800 shadow-sm">
+            <p className="text-sm text-gray-400 font-medium">Completion Rate</p>
+            <p className="text-3xl font-extrabold text-[#F7C95A] mt-1">{stats.percentage}%</p>
           </div>
         </div>
       </div>

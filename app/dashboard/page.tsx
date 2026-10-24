@@ -62,34 +62,36 @@ export default function EvaluatorDashboard() {
 
   const completedCount = assignments.filter((a) => a.status === 'Submitted').length;
 
-  if (loading) return <div className="p-8 text-center text-gray-600">Loading assignments...</div>;
+  if (loading) return <div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">Loading assignments...</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
+    <div className="min-h-screen bg-[#FDF0D0] p-6">
       <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+        {/* Ember Banner */}
+        <div className="bg-[#C04A06] text-white p-6 rounded-xl shadow-md flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Welcome, {userName}</h1>
-            <p className="text-sm text-gray-600">Please complete ratings for all assigned council members below.</p>
+            <h1 className="text-3xl font-bold">Hi, {userName}</h1>
+            <p className="text-amber-100 text-sm mt-1">
+              Please evaluate your assigned council members based on the AY 2026–2027 Internal Evaluation Criteria.
+            </p>
           </div>
           <button
             onClick={handleLogout}
-            className="px-4 py-2 border border-red-600 text-red-600 hover:bg-red-50 rounded-lg text-sm font-semibold transition"
+            className="px-4 py-2 bg-white text-[#C04A06] hover:bg-amber-50 rounded-lg text-sm font-bold transition shadow-sm"
           >
             Logout
           </button>
         </div>
 
-        {/* Progress Tracker */}
+        {/* Progress Tracker with Amber Progress Bar */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
-          <div className="flex justify-between text-sm font-medium text-gray-700 mb-2">
+          <div className="flex justify-between text-sm font-semibold text-gray-700 mb-2">
             <span>Evaluation Progress</span>
             <span>{completedCount} of {assignments.length} Completed</span>
           </div>
-          <div className="w-full bg-gray-200 rounded-full h-3">
+          <div className="w-full bg-gray-200 rounded-full h-3.5 overflow-hidden">
             <div
-              className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+              className="bg-[#F2A91E] h-3.5 rounded-full transition-all duration-300"
               style={{ width: assignments.length ? `${(completedCount / assignments.length) * 100}%` : '0%' }}
             ></div>
           </div>
@@ -97,22 +99,22 @@ export default function EvaluatorDashboard() {
 
         {/* Assignments List */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
-          <div className="p-4 bg-gray-100 font-semibold text-gray-700 border-b">Assigned Members</div>
+          <div className="p-4 bg-amber-50 font-bold text-gray-800 border-b">Assigned Members</div>
           <div className="divide-y divide-gray-200">
             {assignments.map((item) => (
-              <div key={item.id} className="p-4 flex items-center justify-between hover:bg-gray-50">
+              <div key={item.id} className="p-4 flex items-center justify-between hover:bg-amber-50/50 transition">
                 <div>
-                  <h3 className="font-semibold text-gray-900">{item.council_members.full_name}</h3>
-                  <p className="text-sm text-gray-500">{item.council_members.position} • {item.council_members.committee}</p>
+                  <h3 className="font-bold text-gray-900">{item.council_members.full_name}</h3>
+                  <p className="text-sm text-gray-600">{item.council_members.position} • {item.council_members.committee}</p>
                 </div>
 
                 <div className="flex items-center space-x-4">
                   <span
-                    className={`px-3 py-1 text-xs font-semibold rounded-full ${
+                    className={`px-3 py-1 text-xs font-bold rounded-full ${
                       item.status === 'Submitted'
                         ? 'bg-green-100 text-green-800'
                         : item.status === 'In Progress'
-                        ? 'bg-yellow-100 text-yellow-800'
+                        ? 'bg-amber-100 text-amber-900'
                         : 'bg-gray-100 text-gray-600'
                     }`}
                   >
@@ -121,7 +123,7 @@ export default function EvaluatorDashboard() {
 
                   <Link
                     href={`/evaluate/${item.id}`}
-                    className="px-4 py-2 bg-blue-900 text-white rounded-lg text-sm font-medium hover:bg-blue-800 transition"
+                    className="px-4 py-2 bg-[#E8760A] hover:bg-[#d26807] text-white rounded-lg text-sm font-semibold transition shadow-sm"
                   >
                     {item.status === 'Submitted' ? 'View' : 'Evaluate'}
                   </Link>
