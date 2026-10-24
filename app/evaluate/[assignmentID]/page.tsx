@@ -1,9 +1,6 @@
 'use client';
 
-// Force Next.js to render this route dynamically at runtime on Vercel
-export const dynamic = 'force-dynamic';
-
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -69,11 +66,10 @@ const JC_CRITERIA: Criterion[] = [
   },
 ];
 
-export default function EvaluatePage() {
+function EvaluateForm() {
   const router = useRouter();
   const routeParams = useParams();
   
-  // Handles either [assignmentID] or [assignmentId] folder casing
   const assignmentId = (routeParams?.assignmentID || routeParams?.assignmentId) as string;
 
   const [member, setMember] = useState<any>(null);
@@ -258,5 +254,13 @@ export default function EvaluatePage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function EvaluatePage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">Loading evaluation form...</div>}>
+      <EvaluateForm />
+    </Suspense>
   );
 }
