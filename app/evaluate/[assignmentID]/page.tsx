@@ -1,7 +1,10 @@
 'use client';
 
-import { useEffect, useState, use } from 'react';
-import { useRouter } from 'next/navigation';
+// Force Next.js to render this route dynamically at runtime on Vercel
+export const dynamic = 'force-dynamic';
+
+import { useEffect, useState } from 'react';
+import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 interface Criterion {
@@ -66,9 +69,12 @@ const JC_CRITERIA: Criterion[] = [
   },
 ];
 
-export default function EvaluatePage({ params }: { params: Promise<{ assignmentId: string }> }) {
-  const { assignmentId } = use(params);
+export default function EvaluatePage() {
   const router = useRouter();
+  const routeParams = useParams();
+  
+  // Handles either [assignmentID] or [assignmentId] folder casing
+  const assignmentId = (routeParams?.assignmentID || routeParams?.assignmentId) as string;
 
   const [member, setMember] = useState<any>(null);
   const [ratings, setRatings] = useState<number[]>([0, 0, 0, 0, 0]);
@@ -76,6 +82,8 @@ export default function EvaluatePage({ params }: { params: Promise<{ assignmentI
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    if (!assignmentId) return;
+
     async function loadData() {
       const { data: assign, error: assignErr } = await supabase
         .from('assignments')
