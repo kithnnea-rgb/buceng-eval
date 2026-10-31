@@ -1,114 +1,169 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function LoginPage() {
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false);
+interface AssignmentItem {
+  id: string;
+  status: string;
+  council_members: {
+    full_name: string;
+    position: string;
+    committee: string;
+    council_type: string;
+  };
+}
 
-  async function handleLogin(e: React.FormEvent) {
-    e.preventDefault();
+export default function DashboardPage() {
+  const router = useRouter();
+  const [assignments, setAssignments] = useState<AssignmentItem[]>([]);
+  const [evaluatorName, setEvaluatorName] = useState('');
+  const [evaluatorRole, setEvaluatorRole] = useState('');
+  const [loading, setLoading] = useState(true);
 
-    // Prevent double submission if already processing
-    if (loading) return;
+  useEffect(() => {
+    const id = localStorage.getItem('evaluator_id') || sessionStorage.getItem('evaluator_id');
+    const name = localStorage.getItem('evaluator_name') || sessionStorage.getItem('evaluator_name');
+    const role = localStorage.getItem('evaluator_role') || sessionStorage.getItem('evaluator_role');
 
-    setError('');
-    setLoading(true);
+    if (!id) {
+      router.replace('/');
+      return;
+    }
 
-    try {
-      const cleanCode = code.trim();
+    if (name) setEvaluatorName(name);
+    if (role) setEvaluatorRole(role);
 
-      if (!cleanCode) {
-        setError('Please enter a valid login code.');
-        setLoading(false);
-        return;
+    async function fetchAssignments() {
+      // Explicit foreign key relation matching target_member_id column in database schema
+      const { data, error } = await supabase
+        .from('assignments')
+        .select('id, status, council_members:target_member_id(full_name, position, committee, council_type)')
+        .eq('evaluator_id', id);
+
+      if (error) {
+        console.error('Error loading assignments:', error);
+      } else if (data) {
+        setAssignments(data as unknown as AssignmentItem[]);
       }
-
-      const { data, error: fetchError } = await supabase
-        .from('evaluators')
-        .select('id, full_name, role, is_active')
-        .ilike('unique_code', cleanCode)
-        .maybeSingle();
-
-      if (fetchError) {
-        setError(`Database Error: ${fetchError.message}`);
-        setLoading(false);
-        return;
-      }
-
-      if (!data) {
-        setError('Invalid code: No matching evaluator found.');
-        setLoading(false);
-        return;
-      }
-
-      if (data.is_active === false) {
-        setError('This evaluator account is inactive.');
-        setLoading(false);
-        return;
-      }
-
-      // 1. Synchronously save session data across both storage layers
-      localStorage.setItem('evaluator_id', data.id);
-      localStorage.setItem('evaluator_name', data.full_name);
-      localStorage.setItem('evaluator_role', data.role);
-
-      sessionStorage.setItem('evaluator_id', data.id);
-      sessionStorage.setItem('evaluator_name', data.full_name);
-      sessionStorage.setItem('evaluator_role', data.role);
-
-      // 2. Perform a hard navigation to guarantee storage persistence and eliminate router bouncing
-      const destination = data.role === 'Admin' ? '/admin/dashboard' : '/dashboard';
-      window.location.href = destination;
-    } catch (err: any) {
-      setError(`Connection Error: ${err?.message || 'Failed to connect.'}`);
       setLoading(false);
     }
+
+    fetchAssignments();
+  }, [router]);
+
+  function handleLogout() {
+    localStorage.clear();
+    sessionStorage.clear();
+    router.replace('/');
+  }
+
+  const totalCount = assignments.length;
+  const completedCount = assignments.filter((a) => a.status === 'Submitted').length;
+  const progressPercent = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">
+        Loading dashboard...
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-[#FDF0D0] flex items-center justify-center p-4">
-      <div className="max-w-md w-full bg-white rounded-xl shadow-lg p-8 border border-amber-200/60">
-        <div className="text-center mb-6">
-          <h2 className="text-xs font-bold text-gray-500 uppercase tracking-widest">
-            Bicol University College of Engineering
-          </h2>
-          <h1 className="text-xl font-bold text-gray-900 mt-1">
-            CSC Internal Evaluation Portal
-          </h1>
+    <div className="min-h-screen bg-[#FDF0D0] p-6">
+      <div className="max-w-4xl mx-auto space-y-6">
+        {/* Banner Header */}
+        <div className="bg-[#C04A06] text-white p-6 rounded-xl shadow-md flex justify-between items-center">
+          <div>
+            <span className="text-xs uppercase tracking-wider bg-amber-200/20 px-3 py-1 rounded-full font-semibold">
+              {evaluatorRole} Portal
+            </span>
+            <h1 className="text-2xl font-bold mt-2">Welcome, {evaluatorName}!</h1>
+            <p className="text-amber-100 text-sm mt-1">
+              Complete your assigned internal evaluations below.
+            </p>
+          </div>
+          <button
+            onClick={handleLogout}
+            className="px-4 py-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg text-sm font-semibold transition"
+          >
+            Logout
+          </button>
         </div>
 
-        {error && (
-          <div className="mb-4 p-3 bg-red-50 border-l-4 border-red-500 text-red-700 text-xs font-semibold rounded break-words">
-            {error}
+        {/* Progress Summary */}
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200 space-y-3">
+          <div className="flex justify-between items-center text-sm font-bold text-gray-800">
+            <span>Evaluation Progress</span>
+            <span>{completedCount} of {totalCount} Completed ({progressPercent}%)</span>
           </div>
-        )}
-
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold text-gray-700 uppercase tracking-wide mb-1">
-              Unique Login Code
-            </label>
-            <input
-              type="text"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              placeholder="e.g., EXE-K93P7M2V"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E8760A] focus:outline-none uppercase tracking-wider text-sm text-gray-900 font-mono"
-              required
+          <div className="w-full bg-gray-100 rounded-full h-3 overflow-hidden">
+            <div
+              className="bg-[#F2A91E] h-3 transition-all duration-300 rounded-full"
+              style={{ width: `${progressPercent}%` }}
             />
           </div>
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full bg-[#E8760A] hover:bg-[#d26807] text-white font-bold py-3 rounded-lg transition duration-200 disabled:opacity-50 shadow-sm text-sm"
-          >
-            {loading ? 'Redirecting to Dashboard...' : 'Access Portal'}
-          </button>
-        </form>
+        {/* Assigned List */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-bold text-gray-900">Assigned Evaluations</h2>
+          
+          {assignments.length === 0 ? (
+            <div className="bg-white p-8 text-center rounded-xl border border-gray-200 text-gray-500">
+              No assigned evaluations found for this evaluator code.
+            </div>
+          ) : (
+            assignments.map((item) => (
+              <div
+                key={item.id}
+                className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 flex flex-col md:flex-row justify-between md:items-center gap-4"
+              >
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-bold text-gray-900 text-lg">
+                      {item.council_members?.full_name}
+                    </h3>
+                    <span className="text-[10px] uppercase font-bold bg-amber-100 text-amber-800 px-2 py-0.5 rounded">
+                      {item.council_members?.council_type}
+                    </span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">
+                    {item.council_members?.position} — {item.council_members?.committee} Committee
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-4">
+                  <span
+                    className={`text-xs px-3 py-1 rounded-full font-bold ${
+                      item.status === 'Submitted'
+                        ? 'bg-green-100 text-green-800'
+                        : item.status === 'In Progress'
+                        ? 'bg-amber-100 text-amber-800'
+                        : 'bg-gray-100 text-gray-600'
+                    }`}
+                  >
+                    {item.status || 'Not Started'}
+                  </span>
+
+                  <Link
+                    href={`/evaluate/${item.id}`}
+                    className={`px-4 py-2 rounded-lg text-sm font-semibold transition ${
+                      item.status === 'Submitted'
+                        ? 'bg-gray-100 hover:bg-gray-200 text-gray-700'
+                        : 'bg-[#E8760A] hover:bg-[#d26807] text-white shadow-sm'
+                    }`}
+                  >
+                    {item.status === 'Submitted' ? 'View Evaluation' : 'Evaluate'}
+                  </Link>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
       </div>
     </div>
   );

@@ -260,9 +260,10 @@ function EvaluateForm() {
     if (!assignmentId) return;
 
     async function loadData() {
+      // Explicit target_member_id relation join
       const { data: assign, error: assignErr } = await supabase
         .from('assignments')
-        .select('id, evaluator_id, council_members(full_name, position, committee, council_type)')
+        .select('id, evaluator_id, council_members:target_member_id(full_name, position, committee, council_type)')
         .eq('id', assignmentId)
         .maybeSingle();
 
