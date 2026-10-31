@@ -1,17 +1,19 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function LoginPage() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleLogin(e: React.FormEvent) {
     e.preventDefault();
+
+    // Prevent double submission if already processing
+    if (loading) return;
+
     setError('');
     setLoading(true);
 
@@ -24,24 +26,20 @@ export default function LoginPage() {
         return;
       }
 
-      console.log('1. Attempting query for code:', cleanCode);
-
       const { data, error: fetchError } = await supabase
         .from('evaluators')
         .select('id, full_name, role, is_active')
         .ilike('unique_code', cleanCode)
         .maybeSingle();
 
-      console.log('2. Supabase response:', { data, fetchError });
-
       if (fetchError) {
-        setError(`Database Error: ${fetchError.message} (Code: ${fetchError.code})`);
+        setError(`Database Error: ${fetchError.message}`);
         setLoading(false);
         return;
       }
 
       if (!data) {
-        setError('Invalid code: No matching evaluator record was found in the database.');
+        setError('Invalid code: No matching evaluator found.');
         setLoading(false);
         return;
       }
@@ -52,7 +50,7 @@ export default function LoginPage() {
         return;
       }
 
-      // Save session info
+      // 1. Synchronously save session data across both storage layers
       localStorage.setItem('evaluator_id', data.id);
       localStorage.setItem('evaluator_name', data.full_name);
       localStorage.setItem('evaluator_role', data.role);
@@ -61,17 +59,11 @@ export default function LoginPage() {
       sessionStorage.setItem('evaluator_name', data.full_name);
       sessionStorage.setItem('evaluator_role', data.role);
 
-      console.log('3. Login successful! Navigating to dashboard...');
-
-      if (data.role === 'Admin') {
-        router.push('/admin/dashboard');
-      } else {
-        router.push('/dashboard');
-      }
+      // 2. Perform a hard navigation to guarantee storage persistence and eliminate router bouncing
+      const destination = data.role === 'Admin' ? '/admin/dashboard' : '/dashboard';
+      window.location.href = destination;
     } catch (err: any) {
-      console.error('4. Uncaught system error:', err);
-      setError(`Connection Error: ${err?.message || 'Failed to connect to Supabase backend.'}`);
-    } finally {
+      setError(`Connection Error: ${err?.message || 'Failed to connect.'}`);
       setLoading(false);
     }
   }
@@ -103,7 +95,7 @@ export default function LoginPage() {
               type="text"
               value={code}
               onChange={(e) => setCode(e.target.value)}
-              placeholder="e.g., EXE-8V5K2R9Z"
+              placeholder="e.g., EXE-K93P7M2V"
               className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#E8760A] focus:outline-none uppercase tracking-wider text-sm text-gray-900 font-mono"
               required
             />
@@ -114,7 +106,7 @@ export default function LoginPage() {
             disabled={loading}
             className="w-full bg-[#E8760A] hover:bg-[#d26807] text-white font-bold py-3 rounded-lg transition duration-200 disabled:opacity-50 shadow-sm text-sm"
           >
-            {loading ? 'Verifying...' : 'Access Portal'}
+            {loading ? 'Redirecting to Dashboard...' : 'Access Portal'}
           </button>
         </form>
       </div>
