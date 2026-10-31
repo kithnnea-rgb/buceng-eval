@@ -12,68 +12,247 @@ interface Criterion {
 
 const EXEC_CRITERIA: Criterion[] = [
   {
-    title: '1. Leadership and Governance',
-    description: 'Assesses ability to lead with integrity, provide direction, and uphold organizational values.',
-    indicators: ['Vision & Direction', 'Integrity & Accountability', 'Decision-Making & Problem-Solving', 'Delegation & Empowerment', 'Conflict Resolution', 'Accountability'],
+    title: "1. Leadership and Governance",
+    description: "Assesses the officer's ability to lead with integrity, provide direction, and uphold organizational values.",
+    indicators: [
+      "Vision and Direction",
+      "Integrity and Accountability",
+      "Decision-Making and Problem-Solving",
+      "Delegation and Empowerment",
+      "Conflict Resolution and Peacebuilding",
+      "Accountability and Responsibility",
+    ],
   },
   {
-    title: '2. Organizational Contribution',
-    description: "Measures active involvement, initiative, and tangible impact on the council's growth.",
-    indicators: ['Active Participation', 'Initiative & Innovation', 'Program & Project Support', 'Organizational Impact'],
+    title: "2. Organizational Contribution",
+    description: "Measures the officer's active involvement, initiative, and tangible impact on the organization's growth and sustainability.",
+    indicators: [
+      "Active Participation",
+      "Initiative and Innovation",
+      "Program and Project Support",
+      "Organizational Impact",
+    ],
   },
   {
-    title: '3. Communication and Collaboration',
-    description: 'Evaluates clear communication, teamwork, and inclusive relationships within the council.',
-    indicators: ['Clarity & Transparency', 'Active Listening & Responsiveness', 'Interpersonal Relations'],
+    title: "3. Communication and Collaboration",
+    description: "Evaluates the officer's ability to communicate clearly, foster teamwork, and build inclusive relationships within the organization.",
+    indicators: [
+      "Clarity and Transparency",
+      "Active Listening and Responsiveness",
+      "Interpersonal Relations",
+    ],
   },
   {
-    title: '4. Performance and Productivity',
-    description: 'Evaluates efficiency, reliability, and quality of outputs in fulfilling responsibilities.',
-    indicators: ['Execution & Reliability', 'Efficiency & Resource Management', 'Performance Standards', 'Consistency & Initiative', 'Performance Outcomes'],
+    title: "4. Performance and Productivity",
+    description: "Evaluates the officer's efficiency, reliability, and quality of outputs in fulfilling organizational responsibilities.",
+    indicators: [
+      "Execution and Reliability",
+      "Efficiency and Resource Management",
+      "Performance Standards",
+      "Consistency and Initiative",
+      "Performance Outcomes",
+    ],
   },
   {
-    title: '5. Professionalism and Conduct',
-    description: 'Evaluates ethical behavior, discipline, and representation of the organization.',
-    indicators: ['Ethical Standards & Integrity', 'Respect & Workplace Harmony'],
+    title: "5. Professionalism and Conduct",
+    description: "Evaluates the officer's ethical behavior, discipline, and representation of the organization.",
+    indicators: [
+      "Ethical Standards and Integrity",
+      "Respect and Workplace Harmony",
+    ],
   },
 ];
 
 const JC_CRITERIA: Criterion[] = [
   {
-    title: '1. Commitment and Participation',
-    description: 'Evaluates dedication, reliability, and active involvement in organizational activities.',
-    indicators: ['Attendance', 'Active Engagement', 'Reliability & Responsibility', 'Resource Mobilization', 'Initiative'],
+    title: "1. Commitment and Participation",
+    description: "Evaluates the officer's dedication, reliability, and active involvement in organizational activities.",
+    indicators: [
+      "Attendance",
+      "Active Engagement",
+      "Reliability and Responsibility",
+      "Resource Mobilization",
+      "Initiative",
+    ],
   },
   {
-    title: '2. Performance and Productivity',
-    description: 'Evaluates ability to complete assigned responsibilities efficiently, accurately, and with impact.',
-    indicators: ['Timeliness & Reliability', 'Efficiency in Execution', 'Initiative & Proactivity', 'Consistency', 'Adaptability & Progress', 'Prioritization & Organization'],
+    title: "2. Performance and Productivity",
+    description: "Evaluates the officer's ability to complete assigned responsibilities efficiently, accurately, and with measurable impact.",
+    indicators: [
+      "Timeliness and Reliability",
+      "Efficiency in Execution",
+      "Initiative and Proactivity",
+      "Consistency of Performance",
+      "Adaptability and Progress",
+      "Prioritization and Organization",
+    ],
   },
   {
-    title: '3. Collaboration and Teamwork',
-    description: 'Evaluates working harmoniously with peers, fostering inclusivity, and shared success.',
-    indicators: ['Cooperation & Support', 'Shared Responsibility', 'Collaborative Engagement', 'Organizational Unity'],
+    title: "3. Collaboration and Teamwork",
+    description: "Evaluates the officer's ability to work harmoniously with peers, foster inclusivity, and contribute to collective organizational success.",
+    indicators: [
+      "Cooperation and Support",
+      "Shared Responsibility",
+      "Collaborative Engagement",
+      "Organizational Unity",
+    ],
   },
   {
-    title: '4. Communication and Responsiveness',
-    description: 'Evaluates clarity, timeliness, and effectiveness in information exchange.',
-    indicators: ['Timeliness & Responsiveness', 'Active Listening & Feedback', 'Professional Tone & Medium Use'],
+    title: "4. Communication and Responsiveness",
+    description: "Evaluates the officer's clarity, timeliness, and effectiveness in exchanging information and responding to organizational needs.",
+    indicators: [
+      "Timeliness and Responsiveness",
+      "Active Listening and Feedback",
+      "Professional Tone and Medium Use",
+    ],
   },
   {
-    title: '5. Professionalism and Conduct',
-    description: 'Evaluates ethical behavior, discipline, and representation of the organization.',
-    indicators: ['Ethical Standards & Integrity', 'Respect & Workplace Harmony'],
+    title: "5. Professionalism and Conduct",
+    description: "Evaluates the officer's ethical behavior, discipline, and representation of the organization.",
+    indicators: [
+      "Ethical Standards and Integrity",
+      "Respect and Workplace Harmony",
+    ],
   },
 ];
+
+const COMMITTEE_CRITERIA: Criterion[] = [
+  {
+    title: "1. Mandate Fulfillment and Strategic Goal Attainment",
+    description: "Evaluates the committee's overall effectiveness in fulfilling assigned responsibilities, achieving performance targets, and contributing to strategic priorities.",
+    indicators: [
+      "Target Achievement",
+      "Quality of Outputs and Deliverables",
+      "Strategic Alignment",
+    ],
+  },
+  {
+    title: "2. Operational Execution and Crisis Management",
+    description: "Assesses the committee's efficiency, reliability, and adaptability in planning, implementing, and monitoring activities, including addressing unexpected challenges.",
+    indicators: [
+      "Operational Efficiency and Timeliness",
+      "Adaptability and Problem-Solving",
+      "Risk Assessment and Mitigation",
+    ],
+  },
+  {
+    title: "3. Resource Management and Accountability",
+    description: "Evaluates the committee's responsible and transparent use of financial, material, informational, and other organizational resources.",
+    indicators: [
+      "Financial and Material Resource Management",
+      "Documentation and Records Management",
+      "Asset Protection and Sustainability",
+    ],
+  },
+  {
+    title: "4. Cross-Committee Collaboration and Institutional Alignment",
+    description: "Measures the committee's ability to coordinate effectively with other committees and maintain alignment with established council policies and priorities.",
+    indicators: [
+      "Inter-Committee Coordination",
+      "Communication and Information Sharing",
+      "Participation in Council-Wide Initiatives",
+    ],
+  },
+  {
+    title: "5. Team Effectiveness, Morale, and Member Development",
+    description: "Evaluates the committee's internal management, working environment, member engagement, and commitment to developing members' skills.",
+    indicators: [
+      "Equitable Workload Distribution",
+      "Teamwork and Conflict Resolution",
+      "Member Engagement and Capacity Building",
+    ],
+  },
+  {
+    title: "6. Stakeholder Engagement and Organizational Impact",
+    description: "Assesses the committee's effectiveness in engaging its intended audience, responding to stakeholder needs, maintaining credibility, and contributing to overall impact.",
+    indicators: [
+      "Student and Stakeholder Engagement",
+      "Professionalism and Institutional Representation",
+      "Feedback and Continuous Improvement",
+    ],
+  },
+];
+
+const COUNCIL_CRITERIA: Criterion[] = [
+  {
+    title: "1. Mission Fulfillment and Strategic Goal Attainment",
+    description: "Evaluates the council's overall effectiveness in fulfilling its mandate, achieving its plans and targets for the term, and advancing student welfare.",
+    indicators: [
+      "Target Achievement",
+      "Quality of Programs and Outputs",
+      "Strategic Alignment and Student Responsiveness",
+    ],
+  },
+  {
+    title: "2. Governance, Policy Compliance, and Transparency",
+    description: "Assesses how well the council upholds its constitution, bylaws, and institutional policies, and how soundly it makes and communicates decisions.",
+    indicators: [
+      "Constitutional and Policy Compliance",
+      "Decision-Making and Accountability",
+      "Transparency and Records Management",
+    ],
+  },
+  {
+    title: "3. Operational Execution and Crisis Management",
+    description: "Assesses the council's efficiency, reliability, and adaptability in planning, implementing, and monitoring its activities.",
+    indicators: [
+      "Operational Efficiency and Timeliness",
+      "Adaptability and Problem-Solving",
+      "Risk Assessment and Mitigation",
+    ],
+  },
+  {
+    title: "4. Resource Management and Financial Stewardship",
+    description: "Evaluates the council's responsible and transparent use of its financial, material, and informational resources.",
+    indicators: [
+      "Financial Management and Compliance",
+      "Financial Transparency and Reporting",
+      "Asset Protection and Turnover",
+    ],
+  },
+  {
+    title: "5. Internal Coordination, Teamwork, and Member Development",
+    description: "Measures how well the Executive Board, committees, and members work together as one body, and how the council sustains morale.",
+    indicators: [
+      "Inter-Committee and Executive Board Coordination",
+      "Teamwork and Conflict Resolution",
+      "Member Engagement and Capacity Building",
+    ],
+  },
+  {
+    title: "6. Stakeholder Engagement and Institutional Representation",
+    description: "Assesses the council's effectiveness in engaging students, partner organizations, and institutional offices while upholding credibility.",
+    indicators: [
+      "Student Engagement and Participation",
+      "External Partnerships and Representation",
+      "Feedback and Continuous Improvement",
+    ],
+  },
+];
+
+function getCriteriaList(councilType?: string): Criterion[] {
+  const type = councilType?.toUpperCase() || '';
+  if (type === 'JC' || type === 'JUNIOR COUNCILOR') return JC_CRITERIA;
+  if (type === 'COMMITTEE') return COMMITTEE_CRITERIA;
+  if (type === 'COUNCIL') return COUNCIL_CRITERIA;
+  return EXEC_CRITERIA;
+}
+
+interface MemberData {
+  full_name: string;
+  position: string;
+  committee: string;
+  council_type: string;
+}
 
 function EvaluateForm() {
   const router = useRouter();
   const routeParams = useParams();
-  
+
   const assignmentId = (routeParams?.assignmentID || routeParams?.assignmentId) as string;
 
-  const [member, setMember] = useState<any>(null);
-  const [ratings, setRatings] = useState<number[]>([0, 0, 0, 0, 0]);
+  const [member, setMember] = useState<MemberData | null>(null);
+  const [ratings, setRatings] = useState<number[]>([]);
   const [comments, setComments] = useState('');
   const [loading, setLoading] = useState(true);
 
@@ -85,30 +264,31 @@ function EvaluateForm() {
         .from('assignments')
         .select('id, evaluator_id, council_members(full_name, position, committee, council_type)')
         .eq('id', assignmentId)
-        .single();
+        .maybeSingle();
 
       if (assignErr || !assign) {
+        alert('Assignment record not found or inaccessible.');
         router.push('/dashboard');
         return;
       }
 
-      setMember(assign.council_members);
+      const memberData = assign.council_members as unknown as MemberData;
+      setMember(memberData);
+
+      const activeCriteria = getCriteriaList(memberData?.council_type);
 
       const { data: evalData } = await supabase
         .from('evaluations')
         .select('*')
         .eq('assignment_id', assignmentId)
-        .single();
+        .maybeSingle();
 
       if (evalData) {
-        setRatings([
-          evalData.q1_rating || 0,
-          evalData.q2_rating || 0,
-          evalData.q3_rating || 0,
-          evalData.q4_rating || 0,
-          evalData.q5_rating || 0,
-        ]);
+        const loadedRatings = activeCriteria.map((_, idx) => (evalData as Record<string, number>)[`q${idx + 1}_rating`] || 0);
+        setRatings(loadedRatings);
         setComments(evalData.comments || '');
+      } else {
+        setRatings(new Array(activeCriteria.length).fill(0));
       }
 
       setLoading(false);
@@ -124,9 +304,11 @@ function EvaluateForm() {
   }
 
   async function saveEvaluation(submissionType: 'Draft' | 'Final') {
+    const activeCriteria = getCriteriaList(member?.council_type);
+
     if (submissionType === 'Final') {
-      if (ratings.some((r) => r === 0)) {
-        alert('Please provide a rating (1–5) for all 5 criteria before final submission.');
+      if (ratings.length < activeCriteria.length || ratings.some((r) => r === 0)) {
+        alert(`Please provide a rating (1–5) for all ${activeCriteria.length} criteria before final submission.`);
         return;
       }
       if (!confirm('Are you sure you want to finalize this submission? You will not be able to edit it afterward.')) {
@@ -134,36 +316,53 @@ function EvaluateForm() {
       }
     }
 
+    const evalPayload: Record<string, unknown> = {
+      assignment_id: assignmentId,
+      comments,
+      submission_type: submissionType,
+      updated_at: new Date().toISOString(),
+    };
+
+    activeCriteria.forEach((_, idx) => {
+      evalPayload[`q${idx + 1}_rating`] = ratings[idx] || 0;
+    });
+
     const { error: evalErr } = await supabase.from('evaluations').upsert(
-      {
-        assignment_id: assignmentId,
-        q1_rating: ratings[0],
-        q2_rating: ratings[1],
-        q3_rating: ratings[2],
-        q4_rating: ratings[3],
-        q5_rating: ratings[4],
-        comments,
-        submission_type: submissionType,
-        updated_at: new Date().toISOString(),
-      },
+      evalPayload,
       { onConflict: 'assignment_id' }
     );
 
     if (evalErr) {
-      alert('Error saving evaluation.');
+      console.error('Supabase save error:', evalErr);
+      alert(`Error saving evaluation: ${evalErr.message}`);
       return;
     }
 
     const newStatus = submissionType === 'Final' ? 'Submitted' : 'In Progress';
-    await supabase.from('assignments').update({ status: newStatus }).eq('id', assignmentId);
+    const { error: statusErr } = await supabase
+      .from('assignments')
+      .update({ status: newStatus })
+      .eq('id', assignmentId);
+
+    if (statusErr) {
+      console.error('Supabase status update error:', statusErr);
+      alert(`Error updating status: ${statusErr.message}`);
+      return;
+    }
 
     alert(submissionType === 'Final' ? 'Evaluation submitted successfully!' : 'Draft saved.');
     router.push('/dashboard');
   }
 
-  if (loading) return <div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">Loading evaluation form...</div>;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">
+        Loading evaluation form...
+      </div>
+    );
+  }
 
-  const criteriaList = member?.council_type === 'JC' ? JC_CRITERIA : EXEC_CRITERIA;
+  const criteriaList = getCriteriaList(member?.council_type);
 
   return (
     <div className="min-h-screen bg-[#FDF0D0] p-6">
@@ -174,7 +373,9 @@ function EvaluateForm() {
             {member?.council_type} Evaluation
           </span>
           <h1 className="text-2xl font-bold mt-2">{member?.full_name}</h1>
-          <p className="text-amber-100 text-sm mt-1">{member?.position} — {member?.committee} Committee</p>
+          <p className="text-amber-100 text-sm mt-1">
+            {member?.position} — {member?.committee} Committee
+          </p>
         </div>
 
         {/* Criteria Rating Cards */}
@@ -186,7 +387,10 @@ function EvaluateForm() {
                 <p className="text-xs text-gray-600 mt-1">{item.description}</p>
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {item.indicators.map((ind, i) => (
-                    <span key={i} className="text-[11px] bg-amber-50 text-amber-900 px-2 py-0.5 rounded font-medium border border-amber-200/60">
+                    <span
+                      key={i}
+                      className="text-[11px] bg-amber-50 text-amber-900 px-2 py-0.5 rounded font-medium border border-amber-200/60"
+                    >
                       • {ind}
                     </span>
                   ))}
@@ -194,7 +398,9 @@ function EvaluateForm() {
               </div>
 
               <div className="pt-2 border-t">
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Rating Scale (1 = Poor, 5 = Excellent)</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">
+                  Rating Scale (1 = Poor, 5 = Excellent)
+                </label>
                 <div className="flex space-x-3">
                   {[1, 2, 3, 4, 5].map((val) => (
                     <button
@@ -218,7 +424,9 @@ function EvaluateForm() {
           {/* Qualitative Feedback */}
           <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
             <h3 className="font-bold text-gray-900 text-lg mb-1">Qualitative Feedback & Comments</h3>
-            <p className="text-xs text-gray-500 mb-3">Provide constructive observations, recommendations, or key achievements.</p>
+            <p className="text-xs text-gray-500 mb-3">
+              Provide constructive observations, recommendations, or key achievements.
+            </p>
             <textarea
               rows={4}
               value={comments}
@@ -259,7 +467,13 @@ function EvaluateForm() {
 
 export default function EvaluatePage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">Loading evaluation form...</div>}>
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#FDF0D0] p-8 text-center text-gray-700 font-medium">
+          Loading evaluation form...
+        </div>
+      }
+    >
       <EvaluateForm />
     </Suspense>
   );
