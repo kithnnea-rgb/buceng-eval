@@ -37,6 +37,36 @@ export default function AdminDashboardPage() {
     fetchAdminMetrics();
   }, [router]);
 
+  // Paginated fetcher to retrieve ALL rows regardless of Supabase 1,000 row limits
+  async function fetchAllAssignments() {
+    let allAssignments: { id: string; evaluator_id: string; status: string }[] = [];
+    let page = 0;
+    const pageSize = 1000;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('assignments')
+        .select('id, evaluator_id, status')
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (error || !data) {
+        console.error('Error fetching assignments page:', error);
+        break;
+      }
+
+      allAssignments = [...allAssignments, ...data];
+
+      if (data.length < pageSize) {
+        hasMore = false;
+      } else {
+        page++;
+      }
+    }
+
+    return allAssignments;
+  }
+
   async function fetchAdminMetrics() {
     setLoading(true);
 
@@ -47,19 +77,15 @@ export default function AdminDashboardPage() {
       .neq('role', 'Admin')
       .order('full_name', { ascending: true });
 
-    // 2. Fetch all assignments using .range(0, 4999) to bypass Supabase's default 1,000-row cap
-    const { data: assignmentsData, error: assignErr } = await supabase
-      .from('assignments')
-      .select('id, evaluator_id, status')
-      .range(0, 4999);
+    // 2. Fetch ALL assignments via paginated helper
+    const assignments = await fetchAllAssignments();
 
-    if (evalErr || assignErr) {
-      console.error('Error fetching admin data:', evalErr || assignErr);
+    if (evalErr) {
+      console.error('Error fetching evaluators:', evalErr);
       setLoading(false);
       return;
     }
 
-    const assignments = assignmentsData || [];
     const evaluators = evaluatorsData || [];
 
     // Calculate global assignment totals
@@ -163,7 +189,7 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        {/* Overall Completion Bar Card */}
+        {/* Overall Completion Bar Card (Warm Color Scheme) */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-200/60 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h2 className="text-xl font-bold text-gray-900 tracking-tight">Evaluate Members</h2>
@@ -207,7 +233,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Directory & Progress Table */}
+        {/* Evaluator Directory & Progress Table */}
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h3 className="font-bold text-gray-900 text-lg">Evaluator Progress Directory</h3>
