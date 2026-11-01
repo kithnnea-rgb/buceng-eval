@@ -47,10 +47,11 @@ export default function AdminDashboardPage() {
       .neq('role', 'Admin')
       .order('full_name', { ascending: true });
 
-    // 2. Fetch all assignments
+    // 2. Fetch all assignments using .range(0, 4999) to bypass Supabase's default 1,000-row cap
     const { data: assignmentsData, error: assignErr } = await supabase
       .from('assignments')
-      .select('id, evaluator_id, status');
+      .select('id, evaluator_id, status')
+      .range(0, 4999);
 
     if (evalErr || assignErr) {
       console.error('Error fetching admin data:', evalErr || assignErr);
@@ -118,11 +119,9 @@ export default function AdminDashboardPage() {
     document.body.removeChild(link);
   }
 
-  // Calculate percentages
   const overallPercent = totalAssignments > 0 ? Math.round((completedAssignments / totalAssignments) * 100) : 0;
   const completedEvaluatorsCount = evaluatorList.filter((e) => e.is_complete).length;
 
-  // Filtered List
   const filteredEvaluators = evaluatorList.filter((e) => {
     const matchesSearch =
       e.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -164,7 +163,7 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        {/* Overall Completion Bar Card (Warm Color Scheme) */}
+        {/* Overall Completion Bar Card */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-200/60 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h2 className="text-xl font-bold text-gray-900 tracking-tight">Evaluate Members</h2>
@@ -179,7 +178,6 @@ export default function AdminDashboardPage() {
               <span className="font-bold text-gray-900">{totalAssignments}</span> completed
             </div>
 
-            {/* Custom Bar with Warm Gradients */}
             <div className="flex-1 bg-amber-100/60 h-4 rounded-full overflow-hidden p-0.5 border border-amber-200/40">
               <div
                 className="bg-gradient-to-r from-[#C04A06] via-[#E8760A] to-[#F2A91E] h-full rounded-full transition-all duration-500 shadow-xs"
@@ -189,7 +187,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Quick Summary Cards */}
+        {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200">
             <p className="text-xs font-bold text-gray-500 uppercase tracking-wide">Evaluators Completed</p>
@@ -209,7 +207,7 @@ export default function AdminDashboardPage() {
           </div>
         </div>
 
-        {/* Filter and Search Controls */}
+        {/* Directory & Progress Table */}
         <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-200 space-y-4">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h3 className="font-bold text-gray-900 text-lg">Evaluator Progress Directory</h3>
@@ -240,7 +238,6 @@ export default function AdminDashboardPage() {
             </select>
           </div>
 
-          {/* Progress List Table */}
           <div className="overflow-x-auto pt-2">
             <table className="w-full text-left border-collapse">
               <thead>
