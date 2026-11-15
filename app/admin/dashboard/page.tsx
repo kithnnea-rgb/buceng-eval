@@ -37,7 +37,7 @@ export default function AdminDashboardPage() {
     fetchAdminMetrics();
   }, [router]);
 
-  // Paginated fetcher to retrieve ALL rows regardless of Supabase 1,000 row limits
+  // Paginated fetcher to retrieve ALL rows regardless of Supabase 1,000-row caps
   async function fetchAllAssignments() {
     let allAssignments: { id: string; evaluator_id: string; status: string }[] = [];
     let page = 0;
@@ -123,23 +123,71 @@ export default function AdminDashboardPage() {
     router.replace('/');
   }
 
-  function exportCSV() {
-    const headers = ['Full Name', 'Role', 'Committee', 'Access Code', 'Completed', 'Total Assigned', 'Status'];
-    const rows = evaluatorList.map((e) => [
-      `"${e.full_name}"`,
-      `"${e.role}"`,
-      `"${e.committee}"`,
-      `"${e.unique_code}"`,
-      e.completed_count,
-      e.total_assigned,
-      e.is_complete ? 'Completed' : 'Pending',
+  // Export Detailed CSV Report linking Evaluators to Evaluated Members
+  async function exportDetailedCSV() {
+    const { data, error } = await supabase.from('evaluations').select(`
+      id,
+      q1_rating,
+      q2_rating,
+      q3_rating,
+      q4_rating,
+      q5_rating,
+      q6_rating,
+      comments,
+      submission_type,
+      updated_at,
+      assignments (
+        evaluators (full_name, role, committee),
+        council_members:target_member_id (full_name, position, committee)
+      )
+    `);
+
+    if (error || !data) {
+      alert('Failed to fetch detailed evaluation report for CSV export.');
+      return;
+    }
+
+    const headers = [
+      'Evaluator Name',
+      'Evaluator Role',
+      'Evaluator Committee',
+      'Evaluated Member (Subject)',
+      'Subject Position',
+      'Subject Committee',
+      'Q1',
+      'Q2',
+      'Q3',
+      'Q4',
+      'Q5',
+      'Q6',
+      'Comments',
+      'Submission Status',
+      'Submitted At',
+    ];
+
+    const rows = data.map((row: any) => [
+      `"${row.assignments?.evaluators?.full_name || ''}"`,
+      `"${row.assignments?.evaluators?.role || ''}"`,
+      `"${row.assignments?.evaluators?.committee || ''}"`,
+      `"${row.assignments?.council_members?.full_name || ''}"`,
+      `"${row.assignments?.council_members?.position || ''}"`,
+      `"${row.assignments?.council_members?.committee || ''}"`,
+      row.q1_rating || '',
+      row.q2_rating || '',
+      row.q3_rating || '',
+      row.q4_rating || '',
+      row.q5_rating || '',
+      row.q6_rating || '',
+      `"${(row.comments || '').replace(/"/g, '""')}"`,
+      row.submission_type || 'Submitted',
+      `"${row.updated_at ? new Date(row.updated_at).toLocaleString() : ''}"`,
     ]);
 
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `BUCENG_Evaluation_Progress_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute('download', `BUCENG_Detailed_Evaluation_Report_${new Date().toISOString().split('T')}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -238,7 +286,7 @@ export default function AdminDashboardPage() {
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
             <h3 className="font-bold text-gray-900 text-lg">Evaluator Progress Directory</h3>
             <button
-              onClick={exportCSV}
+              onClick={exportDetailedCSV}
               className="px-4 py-2 bg-[#E8760A] hover:bg-[#d26807] text-white rounded-lg text-sm font-bold transition shadow-sm"
             >
               Export CSV Report
