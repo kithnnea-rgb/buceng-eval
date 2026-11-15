@@ -1,5 +1,7 @@
 'use client';
 
+export const dynamic = 'force-dynamic';
+
 import { Suspense, useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
@@ -254,19 +256,15 @@ function EvaluateForm() {
   const [member, setMember] = useState<MemberData | null>(null);
   const [ratings, setRatings] = useState<number[]>([]);
   const [comments, setComments] = useState('');
-  const [assignmentStatus, setAssignmentStatus] = useState<string>('Not Started');
   const [loading, setLoading] = useState(true);
-
-  const isSubmitted = assignmentStatus === 'Submitted';
 
   useEffect(() => {
     if (!assignmentId) return;
 
     async function loadData() {
-      // Explicit target_member_id relation join
       const { data: assign, error: assignErr } = await supabase
         .from('assignments')
-        .select('id, evaluator_id, status, council_members:target_member_id(full_name, position, committee, council_type)')
+        .select('id, evaluator_id, council_members:target_member_id(full_name, position, committee, council_type)')
         .eq('id', assignmentId)
         .maybeSingle();
 
@@ -278,7 +276,6 @@ function EvaluateForm() {
 
       const memberData = assign.council_members as unknown as MemberData;
       setMember(memberData);
-      setAssignmentStatus(assign.status || 'Not Started');
 
       const activeCriteria = getCriteriaList(memberData?.council_type);
 
@@ -289,12 +286,11 @@ function EvaluateForm() {
         .maybeSingle();
 
       if (evalData) {
-        const loadedRatings = activeCriteria.map((_, idx) => (evalData as Record<string, number>)[`q${idx + 1}_rating`] || 0);
+        const loadedRatings = activeCriteria.map(
+          (_, idx) => (evalData as Record<string, number>)[`q${idx + 1}_rating`] || 0
+        );
         setRatings(loadedRatings);
         setComments(evalData.comments || '');
-        if (evalData.submission_type === 'Final') {
-          setAssignmentStatus('Submitted');
-        }
       } else {
         setRatings(new Array(activeCriteria.length).fill(0));
       }
@@ -306,15 +302,12 @@ function EvaluateForm() {
   }, [assignmentId, router]);
 
   function handleRatingChange(index: number, val: number) {
-    if (isSubmitted) return;
     const updated = [...ratings];
     updated[index] = val;
     setRatings(updated);
   }
 
   async function saveEvaluation(submissionType: 'Draft' | 'Final') {
-    if (isSubmitted) return;
-
     const activeCriteria = getCriteriaList(member?.council_type);
 
     if (submissionType === 'Final') {
@@ -379,32 +372,15 @@ function EvaluateForm() {
     <div className="min-h-screen bg-[#FDF0D0] p-6">
       <div className="max-w-3xl mx-auto space-y-6">
         {/* Banner Header */}
-        <div className="bg-[#C04A06] text-white p-6 rounded-xl shadow-md flex justify-between items-start">
-          <div>
-            <span className="text-xs uppercase tracking-wider bg-amber-200/20 px-3 py-1 rounded-full font-semibold">
-              {member?.council_type} Evaluation
-            </span>
-            <h1 className="text-2xl font-bold mt-2">{member?.full_name}</h1>
-            <p className="text-amber-100 text-sm mt-1">
-              {member?.position} — {member?.committee} Committee
-            </p>
-          </div>
-          {isSubmitted && (
-            <span className="bg-green-100 text-green-800 text-xs font-bold px-3 py-1.5 rounded-full border border-green-300">
-              ✓ Submitted (Read-Only)
-            </span>
-          )}
+        <div className="bg-[#C04A06] text-white p-6 rounded-xl shadow-md">
+          <span className="text-xs uppercase tracking-wider bg-amber-200/20 px-3 py-1 rounded-full font-semibold">
+            {member?.council_type} Evaluation
+          </span>
+          <h1 className="text-2xl font-bold mt-2">{member?.full_name}</h1>
+          <p className="text-amber-100 text-sm mt-1">
+            {member?.position} — {member?.committee} Committee
+          </p>
         </div>
-
-        {/* Read-Only Notice */}
-        {isSubmitted && (
-          <div className="bg-amber-50 border-l-4 border-[#E8760A] text-amber-900 p-4 rounded-lg text-sm">
-            <p className="font-bold">Evaluation Finalized</p>
-            <p className="text-xs text-amber-800 mt-0.5">
-              You have already submitted this evaluation. Your responses are displayed below in read-only mode.
-            </p>
-          </div>
-        )}
 
         {/* Criteria Rating Cards */}
         <div className="space-y-4">
@@ -430,17 +406,16 @@ function EvaluateForm() {
                   Rating Scale (1 = Poor, 5 = Excellent)
                 </label>
                 <div className="flex space-x-3">
-                  {[9-13].map((val) => (
+                  {[1, 2, 3, 4, 5].map((val) => (
                     <button
                       key={val}
                       type="button"
-                      disabled={isSubmitted}
                       onClick={() => handleRatingChange(idx, val)}
                       className={`flex-1 py-3 rounded-lg font-bold border transition shadow-xs ${
                         ratings[idx] === val
                           ? 'bg-[#E8760A] text-white border-[#E8760A]'
                           : 'bg-gray-50 text-gray-700 border-gray-300 hover:bg-amber-50'
-                      } ${isSubmitted ? 'cursor-not-allowed opacity-90' : ''}`}
+                      }`}
                     >
                       {val}
                     </button>
@@ -458,13 +433,10 @@ function EvaluateForm() {
             </p>
             <textarea
               rows={4}
-              readOnly={isSubmitted}
               value={comments}
               onChange={(e) => setComments(e.target.value)}
               placeholder="Write feedback here..."
-              className={`w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#E8760A] focus:outline-none ${
-                isSubmitted ? 'bg-gray-50 text-gray-700 cursor-not-allowed' : ''
-              }`}
+              className="w-full border border-gray-300 rounded-lg p-3 text-sm focus:ring-2 focus:ring-[#E8760A] focus:outline-none"
             />
           </div>
         </div>
@@ -475,25 +447,22 @@ function EvaluateForm() {
             onClick={() => router.push('/dashboard')}
             className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm font-semibold"
           >
-            {isSubmitted ? 'Back to Dashboard' : 'Cancel'}
+            Cancel
           </button>
-          
-          {!isSubmitted && (
-            <div className="space-x-3">
-              <button
-                onClick={() => saveEvaluation('Draft')}
-                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm font-semibold transition"
-              >
-                Save Draft
-              </button>
-              <button
-                onClick={() => saveEvaluation('Final')}
-                className="px-4 py-2 bg-[#E8760A] hover:bg-[#d26807] text-white rounded-lg text-sm font-semibold transition shadow-sm"
-              >
-                Submit Evaluation
-              </button>
-            </div>
-          )}
+          <div className="space-x-3">
+            <button
+              onClick={() => saveEvaluation('Draft')}
+              className="px-4 py-2 bg-gray-200 hover:bg-gray-300 text-gray-800 rounded-lg text-sm font-semibold transition"
+            >
+              Save Draft
+            </button>
+            <button
+              onClick={() => saveEvaluation('Final')}
+              className="px-4 py-2 bg-[#E8760A] hover:bg-[#d26807] text-white rounded-lg text-sm font-semibold transition shadow-sm"
+            >
+              Submit Evaluation
+            </button>
+          </div>
         </div>
       </div>
     </div>
