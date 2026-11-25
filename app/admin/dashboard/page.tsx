@@ -37,7 +37,7 @@ export default function AdminDashboardPage() {
     fetchAdminMetrics();
   }, [router]);
 
-  // Paginated fetcher to retrieve ALL rows regardless of Supabase 1,000-row caps
+  // Paginated helper to fetch ALL assignments across 1,000-row page caps
   async function fetchAllAssignments() {
     let allAssignments: { id: string; evaluator_id: string; status: string }[] = [];
     let page = 0;
@@ -65,6 +65,51 @@ export default function AdminDashboardPage() {
     }
 
     return allAssignments;
+  }
+
+  // Paginated helper to fetch ALL evaluations across 1,000-row page caps
+  async function fetchAllEvaluations() {
+    let allEvaluations: any[] = [];
+    let page = 0;
+    const pageSize = 1000;
+    let hasMore = true;
+
+    while (hasMore) {
+      const { data, error } = await supabase
+        .from('evaluations')
+        .select(`
+          id,
+          q1_rating,
+          q2_rating,
+          q3_rating,
+          q4_rating,
+          q5_rating,
+          q6_rating,
+          comments,
+          submission_type,
+          updated_at,
+          assignments (
+            evaluators (full_name, role, committee),
+            council_members:target_member_id (full_name, position, committee)
+          )
+        `)
+        .range(page * pageSize, (page + 1) * pageSize - 1);
+
+      if (error || !data) {
+        console.error('Error fetching evaluations page:', error);
+        break;
+      }
+
+      allEvaluations = [...allEvaluations, ...data];
+
+      if (data.length < pageSize) {
+        hasMore = false;
+      } else {
+        page++;
+      }
+    }
+
+    return allEvaluations;
   }
 
   async function fetchAdminMetrics() {
@@ -123,27 +168,12 @@ export default function AdminDashboardPage() {
     router.replace('/');
   }
 
-  // Export Detailed CSV Report linking Evaluators to Evaluated Members
+  // Export Detailed CSV Report with full pagination
   async function exportDetailedCSV() {
-    const { data, error } = await supabase.from('evaluations').select(`
-      id,
-      q1_rating,
-      q2_rating,
-      q3_rating,
-      q4_rating,
-      q5_rating,
-      q6_rating,
-      comments,
-      submission_type,
-      updated_at,
-      assignments (
-        evaluators (full_name, role, committee),
-        council_members:target_member_id (full_name, position, committee)
-      )
-    `);
+    const data = await fetchAllEvaluations();
 
-    if (error || !data) {
-      alert('Failed to fetch detailed evaluation report for CSV export.');
+    if (!data || data.length === 0) {
+      alert('No evaluation records found to export.');
       return;
     }
 
@@ -187,7 +217,7 @@ export default function AdminDashboardPage() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `BUCENG_Detailed_Evaluation_Report_${new Date().toISOString().split('T')}.csv`);
+    link.setAttribute('download', `BUCENG_Detailed_Evaluation_Report_${new Date().toISOString().split('T')[0]}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -237,7 +267,7 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        {/* Overall Completion Bar Card (Warm Color Scheme) */}
+        {/* Overall Completion Bar Card */}
         <div className="bg-white p-6 rounded-xl shadow-sm border border-amber-200/60 space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
             <h2 className="text-xl font-bold text-gray-900 tracking-tight">Evaluate Members</h2>
